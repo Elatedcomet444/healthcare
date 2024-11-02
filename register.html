@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Registration Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+    
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(rgba(243, 239, 239, 0.6), rgba(243, 239, 239, 0.6)), url('back2.jpg');
+        }
+    
+        .container {
+            width: 80%;
+            max-width: 800px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px; /* Added margin above the form */
+        }
+    
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+    
+        .form-group {
+            flex: 1;
+            margin-bottom: 20px;
+        }
+    
+        .family-member {
+            display: none;
+        }
+    
+        .add-member {
+            display: block;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    
+        #addMember2 {
+            display: none;
+        }
+    
+        h2 {
+            color: #53c9c2;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+    
+        .section-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.section-title h3 {
+    margin: 0 10px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    position: relative;
+    z-index: 1;
+    background-color: #fff;
+    padding: 0 10px;
+}
+
+.section-title::before {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background-color: #000;
+    margin-right: 10px;
+}
+
+.section-title::after {
+    content: "";
+    flex-grow: 1;
+    height: 1px;
+    background-color: #000;
+    margin-left: 10px;
+}
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+    
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    
+        button {
+            background-color: #53c9c2;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+    
+        button:hover {
+            background-color: #45a29e;
+        }
+    
+        .add-member {
+            background-color: #fff;
+            color: #53c9c2;
+            border: 2px solid #53c9c2;
+            margin: 20px auto; /* Center the button */
+            display: block;
+            width: fit-content;
+        }
+    
+        .add-member:hover {
+            background-color: #53c9c2;
+            color: #fff;
+        }
+    
+        #camera-preview, #captured-photo {
+            width: 100%;
+            max-width: 390px;
+            height: auto;
+            margin: 15px auto; /* Center the photo */
+            display: block;
+        }
+    
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    
+        .family-member {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Registration Form</h2>
+        <form id="registrationForm" action='/register' method='POST'>
+            <p style="color:tomato">{{message}}</p>
+            <!-- <div class="form-row">
+                <div class="form-group">
+                    <label for="phone"><i class="fas fa-phone"></i> Phone Number:</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </div> -->
+    
+            <div class="section-title">
+                <h3>Guardian Details</h3>
+                <div class="line"></div>
+            </div>
+    
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="guardianName"><i class="fas fa-user"></i> Name:</label>
+                    <input type="text" id="guardianName" name="guardianName" required>
+                </div>
+                <div class="form-group">
+                    <label for="guardianMobile"><i class="fas fa-mobile-alt"></i> Mobile Number:</label>
+                    <input type="tel" id="guardianMobile" name="guardianMobile" pattern="[0-9]{10}" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="guardianEmail"><i class="fas fa-envelope"></i> Email ID:</label>
+                <input type="email" id="guardianEmail" name="guardianEmail" required>
+            </div>
+    
+            <div class="section-title">
+                <h3>Patient Details</h3>
+                <div class="line"></div>
+            </div>
+            
+            <div class="form-row">  
+                <div class="form-group">
+                    <label for="patientName"><i class="fas fa-user"></i> Name:</label>
+                    <input type="text" id="patientName" name="patientName" required>
+                </div>
+                <div class="form-group">
+                    <label for="patientMobile"><i class="fas fa-mobile-alt"></i> Mobile Number:</label>
+                    <input type="tel" id="patientMobile" name="patientMobile" pattern="[0-9]{10}" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="address"><i class="fas fa-map-marker-alt"></i> Address:</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="language"> Language:</label>
+                    <select id="language" name="language" required>
+                        <option value="">Select a language</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Telugu">Telugu</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Kannada">Kannada</option>
+                        <option value="Malayalam">Malayalam</option>
+                        <!-- Add more language options as needed -->
+                    </select>
+                </div>
+            
+            </div>        <div class="form-group">
+                <label for="capture">Live Camera Capture:</label>
+                <video id="camera-preview" width="390" height="300" autoplay playsinline></video>
+                <input type="hidden" id="capturedPhotoData" name="capturedPhotoData">
+                <canvas id="captured-photo" width="390" height="300" style="display: none;"></canvas>
+            </div>
+    
+            <div class="button-container">
+                <button type="button" onclick="capturePhoto()">Capture Photo</button>
+                <button type="button" onclick="retakePhoto()">Retake</button>
+                <button type="submit">Register</button>
+                <button type="button" onclick="face_recognition()">Face Login</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let videoStream;
+        const videoElement = document.getElementById('camera-preview');
+        const capturedPhotoCanvas = document.getElementById('captured-photo');
+        const captureButton = document.querySelector('button[onclick="capturePhoto()"]');
+        const retakeButton = document.querySelector('button[onclick="retakePhoto()"]');
+
+        async function startCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = videoStream;
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                const tracks = videoStream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+        }
+        function addFamilyMember(memberNumber) {
+    const memberDiv = document.getElementById(`familyMember${memberNumber}`);
+    memberDiv.style.display = 'block';
+    event.target.style.display = 'none';
+    
+    if (memberNumber === 1) {
+        document.getElementById('addMember2').style.display = 'block';
+    }
+}
+        function capturePhoto() {
+            const context = capturedPhotoCanvas.getContext('2d');
+            context.drawImage(videoElement, 0, 0, capturedPhotoCanvas.width, capturedPhotoCanvas.height);
+        
+            // Get the captured image data as a base64-encoded string
+            const imageData = capturedPhotoCanvas.toDataURL('image/png');
+        
+            // Set the image data in the hidden input field
+            document.getElementById('capturedPhotoData').value = imageData;
+        
+            // Show the captured photo canvas and hide the live camera preview
+            capturedPhotoCanvas.style.display = 'block';
+            videoElement.style.display = 'none';
+        
+            // Disable the "Capture Photo" button and enable the "Retake" button
+            captureButton.disabled = true;
+            retakeButton.disabled = false;
+        }
+        
+        
+        function retakePhoto() {
+            // Show the live camera preview and hide the captured photo canvas
+            videoElement.style.display = 'block';
+            capturedPhotoCanvas.style.display = 'none';
+
+            // Enable the "Capture Photo" button and disable the "Retake" button
+            captureButton.disabled = false;
+            retakeButton.disabled = true;
+        }
+
+
+        // Initialize the camera when the page loads
+        startCamera();
+    </script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asha Data</title>
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .header_fixed {
+            max-height: 100vh;
+            width: 100%;
+            overflow: auto;
+        }
+        .header_fixed thead th {
+            position: sticky;
+            top: 0;
+            background-color: #53C9C2;
+            color: #fff;
+            font-size: 15px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #53C9C2;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .btn {
+            background-color: #53C9C2;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        td img {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="header_fixed" id="userdata">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Photo</th>
+                    <th>Completed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.address }}</td>
+                    <td><img src="data:image/jpeg;base64,{{ row.photo }}" alt="Prescription" width="100"></td>
+                    <td>
+                        <input type="checkbox" id="completed{{ row.id }}" class="completion-checkbox" data-id="{{ row.id }}" 
+                               {% if row.completed == 1 %}checked{% endif %}>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <center><button onclick="location.href='/'" class="btn">Go Home</button></center>
+    
+    <script>
+        document.querySelectorAll('.completion-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const id = this.dataset.id;
+                const completed = this.checked;
+                updateCompletion(id, completed);
+            });
+        });
+
+        function updateCompletion(id, completed) {
+            fetch('/update_completion', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `id=${id}&completed=${completed}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Completion status updated:', data);
+                    const checkbox = document.getElementById(`completed${id}`);
+                    const imageCell = checkbox.closest('tr').querySelector('td:nth-child(4)');
+                    const img = imageCell.querySelector('img');
+                    
+                    if (img) {
+                        if (completed) {
+                            img.style.opacity = '0.5';
+                            img.title = 'Completed';
+                        } else {
+                            img.style.opacity = '1';
+                            img.title = 'Not Completed';
+                        }
+                    }
+                } else {
+                    console.error('Failed to update completion status');
+                    // Revert the checkbox state if the update failed
+                    const checkbox = document.getElementById(`completed${id}`);
+                    checkbox.checked = !completed;
+                }
+            })
+            .catch(error => {
+                console.error('Error updating completion status:', error);
+                // Revert the checkbox state if there was an error
+                const checkbox = document.getElementById(`completed${id}`);
+                checkbox.checked = !completed;
+            });
+        }
+    </script>
+</body>
+</html>

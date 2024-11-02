@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link class="logo1" href="/static/default.png" rel="icon" type="image/x-icon">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
+    <title>Login Form</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .main-container {
+            display: flex;
+            width: 80%;
+            padding:20px;
+            width: 1000px;
+            background: white;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .image-container {
+            flex: 1;
+            max-width: 50%;
+        }
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .forms {
+            flex: 1;
+            padding: 30px;
+            max-width: 50%;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .input-field {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-field input {
+            width: 70%;
+            padding: 10px 35px 10px 35px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .input-field i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        .input-field .showHidePw {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
+        }
+        .checkbox-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .checkbox-content {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-content input {
+            margin-right: 5px;
+        }
+        .button input {
+            width: 80%;
+            padding: 12px;
+            background-color: #53C9C2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button input:hover {
+            background-color: #45a9a3;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="image-container">
+            <img src="https://i.ibb.co/RzDYQ3b/login-health.jpg" alt="login-health">
+        </div>
+        <div class="forms">
+            <div class="form login">
+                <span class="title">Login</span>
+                <form action="{{ url_for('asha_login_details') }}" method="POST">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <span style="color: {% if category == 'error' %}tomato{% else %}green{% endif %};">
+                                    {{ message }}
+                                </span>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <div class="input-field">
+                        <i class="uil uil-envelope"></i>
+                        <input type="email" placeholder="Enter your email" name="email" required>
+                    </div>
+                    <div class="input-field">
+                        <i class="uil uil-lock icon"></i>
+                        <input type="password" class="password" placeholder="Enter your password" name="password" required>
+                    </div>
+                    <div class="checkbox-text">
+                        <div class="checkbox-content">
+                            <input type="checkbox" id="logCheck">
+                            <label for="logCheck">Remember me</label>
+                        </div>
+                    </div>
+                    <div class="input-field button">
+                        <input type="submit" value="Login">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const pwShowHide = document.querySelectorAll(".showHidePw");
+        const pwFields = document.querySelectorAll(".password");
+
+        pwShowHide.forEach(eyeIcon => {
+            eyeIcon.addEventListener("click", () => {
+                pwFields.forEach(pwField => {
+                    if (pwField.type === "password") {
+                        pwField.type = "text";
+                        eyeIcon.classList.replace("uil-eye-slash", "uil-eye");
+                    } else {
+                        pwField.type = "password";
+                        eyeIcon.classList.replace("uil-eye", "uil-eye-slash");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

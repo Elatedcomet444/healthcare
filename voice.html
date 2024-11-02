@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Assistant</title>
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 80px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    #microphone {
+      width: 60px;
+      height: 60px;
+      background-color: #007bff;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
+    }
+    #microphone:hover {
+      background-color: #0056b3;
+    }
+    #microphone.active {
+      background-color: #e74c3c;
+    }
+    #microphone img {
+      width: 40px;
+      height: 40px;
+      fill: #fff;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    .back-video {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
+        min-width: 100%;
+        min-height: 100%;
+    }
+</style>
+</head>
+<body>
+    <video autoplay loop muted plays-inline class="back-video">
+        <source src="/static/sam4.mp4" type="video/mp4">
+    </video>  
+<div class="container">
+    <h1>{{session['telugu']}}</h1>
+    <div id="microphone">
+      <img id="mic-icon" src="/static/microphone.svg" alt="Microphone">
+    </div>
+    <div id="output"></div>
+  </div>
+
+<script>
+  const outputDiv = document.getElementById('output');
+  const micDiv = document.getElementById('microphone');
+  const micIcon = document.getElementById('mic-icon');
+  const recognition = new webkitSpeechRecognition();
+
+  // Define the conversation flow for different languages
+  const conversationFlows = {
+    'en': [
+      "What is the name of the disease you are suffering from?",
+      "How long have you been suffering from fever?",
+      "Do you have any other symptoms?"
+    ],
+    'te': [
+      "మీరు ఏ వ్యాధితో బాధపడుతున్నారు?",
+      "మీకు జ్వరం ఎంతకాలంగా ఉంది?",
+      "మీకు మరే ఇతర లక్షణాలు ఉన్నాయా?"
+    ],
+    'hi': [
+      "आप किस बीमारी से पीड़ित हैं?",
+      "आपको बुखार कितने समय से है?",
+      "क्या आपके पास कोई अन्य लक्षण हैं?"
+    ],
+  };
+
+  // Define the final messages for different languages
+  const finalMessages = {
+    'en': {
+      'success': "We have identified the possible disease as: ",
+      'failure': "Could not identify the disease. Please try again.",
+      'error': "An error occurred. Please try again."
+    },
+    'te': {
+      'success': "మేము మీకు ఉండవచ్చిన వ్యాధి గుర్తించాము: ",
+      'failure': "వ్యాధి గుర్తించబడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.",
+      'error': "ఒక పొరపాటు జరిగింది. దయచేసి మళ్లీ ప్రయత్నించండి."
+    },
+    'hi': {
+      'success': "हमने संभावित बीमारी की पहचान की है: ",
+      'failure': "बीमारी की पहचान नहीं हो पाई। कृपया पुनः प्रयास करें।",
+      'error': "एक त्रुटि हुई। कृपया पुनः प्रयास करें।"
+    }
+  };
+
+  // Define the language codes for different languages
+  const langCodeDict = {
+    'English': 'en',
+    'Hindi': 'hi',
+    'Telugu': 'te'
+  };
+
+  const sessionLang = '{{ session["lang"] }}';
+  const langCode = langCodeDict[sessionLang] || 'en'; // Default to English if no match
+  recognition.lang = langCode;
+
+  // Select the appropriate conversation flow based on the session['lang']
+  const conversationFlow = conversationFlows[langCode] || conversationFlows['en'];
+
+  let currentQuestionIndex = 0;
+  let answers = [];
+
+  micDiv.addEventListener('click', () => {
+    micDiv.classList.add('active');
+    if (currentQuestionIndex < conversationFlow.length) {
+      outputDiv.innerText = conversationFlow[currentQuestionIndex];
+      speakText(conversationFlow[currentQuestionIndex]);  // Speak out the question
+    } else {
+      outputDiv.innerText = "Thank you for your information. Sending it to the doctor.";
+      sendAnswersToBackend(answers);
+    }
+  });
+
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    answers.push(transcript);
+    currentQuestionIndex++;
+    micDiv.classList.remove('active');
+    if (currentQuestionIndex < conversationFlow.length) {
+      setTimeout(() => {
+        micDiv.classList.add('active');
+        outputDiv.innerText = conversationFlow[currentQuestionIndex];
+        speakText(conversationFlow[currentQuestionIndex]);  // Speak out the next question
+      }, 1000); // Small delay before next question
+    } else {
+      outputDiv.innerText = "Processing your information...";
+      sendAnswersToBackend(answers);
+    }
+  };
+
+  recognition.onend = function() {
+    micDiv.classList.remove('active');
+  };
+
+  recognition.onerror = function(event) {
+    console.error('Speech recognition error:', event.error);
+    micDiv.classList.remove('active');
+  };
+
+  function speakText(text) {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = langCode;  // Set the same language as the recognition
+      speechSynthesis.speak(utterance);
+      utterance.onend = () => recognition.start();  // Start speech recognition after speaking
+    } else {
+      console.error('Speech Synthesis API not supported in this browser.');
+    }
+  }
+
+  function sendAnswersToBackend(answers) {
+    const formData = new FormData();
+    formData.append('answers', JSON.stringify(answers));
+    fetch('/translate', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Assuming 'data' contains the disease name
+        if (data && data.status === 'success' && data.translatedText) {
+          const finalMessage = finalMessages[langCode].success + data.translatedText;
+          outputDiv.innerText = finalMessage;
+          speakText(finalMessage);
+          setTimeout(() => {
+              window.location.href = '/predict'; // Redirect to the prediction or result page
+          }, 3000); // Delay for user to read the message
+        } else {
+          const failureMessage = finalMessages[langCode].failure;
+          outputDiv.innerText = failureMessage;
+          speakText(failureMessage);
+        }
+    })
+    .catch(error => {
+        console.error('Error sending answers:', error);
+        const errorMessage = finalMessages[langCode].error;
+        outputDiv.innerText = errorMessage;
+        speakText(errorMessage);
+    });
+  }
+</script>
+</body>
+</html>
